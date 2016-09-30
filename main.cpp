@@ -50,6 +50,10 @@ int main(int argc, char **argv)
 }
 
 
+/*=================================
+=            Functions            =
+=================================*/
+
 void createGame(Futoshiki *field)
 {
     scanf("%d %d\n", &field->fsize, &field->nrestr);
@@ -110,10 +114,16 @@ void freeMemory(Futoshiki *field)
     free(field->restr);
 }
 
+
+/*=====  End of Functions  ======*/
+
+
+
+
+
+
+
 /**
-
-
-
 
 bool backtracking(board *newBoard)
 {
