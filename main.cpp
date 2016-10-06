@@ -1,23 +1,42 @@
-/**
- *  Algoritmos Avançados e Aplicações
- *  Backtracking - Futoshiki
- *
- *  - Rodrigo das Neves Bernardi 8066395
- */
-
+/****************************************************************
+*        Projeto 1 - Algoritmos Avançados e Aplicações          *
+*             Futoshiki - Backtracking solution                 *
+*																*
+*         Rodrigo das Neves Bernardi    - 8066395               *
+*                                                               *
+****************************************************************/
 
 #include <iostream>
 
 
-typedef struct
-{
-	int **data, fsize;
-	int **restr, nrestr;
+typedef struct {
+	int x;
+	int y;
+} coord;
 
+typedef struct space {
+    int value;
+    int *domain;
+    int forward_check;
+    coord *pos;
+    coord greater[4];
+    coord less[4];
+}Space;
+
+typedef struct {
+	Space **grid;
+	int fsize;
+	int **restr;
+	int rsize;
 }Futoshiki;
 
 
-void createGame(Futoshiki *field);
+typedef struct
+{
+	
+}Restriction_M;
+
+void createGame(Futoshiki *field, FILE *);
 void printGame(Futoshiki field);
 void freeMemory(Futoshiki *field);
 
@@ -29,21 +48,29 @@ int main(int argc, char **argv)
 	int ngames;
 	Futoshiki Field;
 
-	scanf("%d\n", &ngames);
+	if (argc != 3) {
+		cout << "Usage: ./futoshiki [flag forward check] [flag MRV] \n" << endl;
+		cout << "Example: ./futoshiki 1 0 (only forward check ON)\n" << endl;
+	} else {
+		
+		FILE *fp = fopen("futoshiki.dat","r");
 
-	for (int k = 0; k < ngames; ++k)
-	{
-		createGame(&Field);
+		fscanf(fp, "%d\n", &ngames);
 
-		cout << "\nnumber of games = " << ngames << endl;
-		cout << "field size = " << Field.fsize << "   number of restrictions = " << Field.nrestr << endl;
+		for (int k = 0; k < ngames; ++k)
+		{
+			createGame(&Field, fp);
 
-		printGame(Field);
+			cout << "\nnumber of games = " << ngames << endl;
+			cout << "field size = " << Field.fsize << "   number of restrictions = " << Field.rsize << endl;
 
-		freeMemory(&Field);
+			printGame(Field);
+
+			//freeMemory(&Field);
+		}
+
+		return 0;
 	}
-
-	return 0;
 }
 
 
@@ -51,28 +78,34 @@ int main(int argc, char **argv)
 =            Functions            =
 =================================*/
 
-void createGame(Futoshiki *field)
+void createGame(Futoshiki *field, FILE *fp)
 {
-	scanf("%d %d\n", &field->fsize, &field->nrestr);
+	fscanf(fp, "%d %d\n", &field->fsize, &field->rsize);
     
-	field->data = (int **) calloc(field->fsize, sizeof(int *));
-
+	field->grid = (Space **) calloc(field->fsize, sizeof(Space *));
 	for (int i = 0; i < field->fsize; ++i)
-		field->data[i] = (int *) calloc(field->fsize, sizeof(int));
+		field->grid[i] = (Space *) calloc(field->fsize, sizeof(Space));
 
 	for (int i = 0; i < field->fsize; ++i)
 		for (int j = 0; j < field->fsize; ++j)
-			scanf("%d ", &field->data[i][j]);
+			fscanf(fp, "%d ", &field->grid[i][j].value);
 
-	field->restr = (int **) calloc(field->nrestr, sizeof(int *));
-
-	for (int i = 0; i < field->nrestr; ++i)
+	field->restr = (int **) calloc(field->rsize, sizeof(int *));
+	for (int i = 0; i < field->rsize; ++i)
 		field->restr[i] = (int *) calloc(4, sizeof(int));
 
-
-	for (int i = 0; i < field->nrestr; ++i)
+	for (int i = 0; i < field->rsize; ++i)
 		for (int j = 0; j < 4; ++j)
-			scanf("%d ", &field->restr[i][j]);
+			fscanf(fp, "%d ", &field->restr[i][j]);
+
+	// for (int i = 0; i < rsize; ++i)
+	// {
+	// 	for (int j = 0; j < 4; j+2)
+	// 	{
+	// 		field->grid[field->restr[i][j]][field->restr[i][j+1]]. = 
+	// 	}
+	// }
+
 }
 
 void printGame(Futoshiki field)
@@ -81,7 +114,7 @@ void printGame(Futoshiki field)
 	for (int i = 0; i < field.fsize; ++i)
 	{
 		for (int j = 0; j < field.fsize; ++j)
-			cout << " " << field.data[i][j];
+			cout << " " << field.grid[i][j].value;
 
 		cout << endl;
 	}
@@ -89,7 +122,7 @@ void printGame(Futoshiki field)
 	cout << endl;
 
 
-	for (int i = 0; i < field.nrestr; ++i)
+	for (int i = 0; i < field.rsize; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 			cout << " " << field.restr[i][j];
@@ -98,18 +131,18 @@ void printGame(Futoshiki field)
 	}
 }
 
-void freeMemory(Futoshiki *field)
-{
-	for (int i = 0; i < field->fsize; ++i)
-		free(field->data[i]);
+// void freeMemory(Futoshiki *field)
+// {
+// 	for (int i = 0; i < field->fsize; ++i)
+// 		free(field->data[i]);
 
-	free(field->data);
+// 	free(field->data);
 
-	for (int i = 0; i < field->nrestr; ++i)
-		free(field->restr[i]);
+// 	for (int i = 0; i < field->nrestr; ++i)
+// 		free(field->restr[i]);
 
-	free(field->restr);
-}
+// 	free(field->restr);
+// }
 
 
 /*=====  End of Functions  ======*/
