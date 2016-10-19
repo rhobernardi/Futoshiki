@@ -1,31 +1,25 @@
-#/****************************************************************#
-#*        Projeto 1 - Algoritmos Avançados e Aplicações          *#
-#*             Futoshiki - Backtracking solution                 *#
-#*																 *#
-#*         Rodrigo das Neves Bernardi    - 8066395               *#
-#*                                                               *#
-#****************************************************************/#
+CC=g++
+CFLAGS=-c
 
-BIN = futoshiki
-SOURCE = main.cpp
-IN = futoshiki.dat
+all: ./game
 
+game: FutoshikiSolver.o FutoshikiBoard.o BoardSlot.o main.cpp
+	@$(CC) -o game FutoshikiSolver.o FutoshikiBoard.o BoardSlot.o main.cpp
 
-all: compile bt
+FutoshikiSolver.o: FutoshikiSolver.h FutoshikiSolver.cpp
+	@$(CC) FutoshikiSolver.h FutoshikiSolver.cpp $(CFLAGS)
 
-compile: $(SOURCE) $(IN)
-	@g++ -o $(BIN) $(SOURCE)
+FutoshikiBoard.o: FutoshikiBoard.h FutoshikiBoard.cpp
+	@$(CC) FutoshikiBoard.h FutoshikiBoard.cpp $(CFLAGS)
 
-zip:
-	@rm -rf *~ *.o
-	@rm -rf *.zip
-	@zip -r Projeto1.zip $(SOURCE) $(IN) Makefile
+BoardSlot.o: BoardSlot.h BoardSlot.cpp
+	@$(CC) BoardSlot.h BoardSlot.cpp $(CFLAGS)
 
-bt:
-	@./futoshiki 0 0
+clean:
+	@rm -rf *.o *gch game
 
-va:
-	@./futoshiki 1 0
+zip: clean
+	@zip Projeto1.zip *.h *.cpp Makefile README.txt futoshiki.dat Projeto1.pdf
 
-mvr:
-	@./futoshiki 1 1
+run:
+	@./game 1 < futoshiki.dat

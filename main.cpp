@@ -1,148 +1,45 @@
-/****************************************************************
-*        Projeto 1 - Algoritmos Avançados e Aplicações          *
-*             Futoshiki - Backtracking solution                 *
-*																*
-*         Rodrigo das Neves Bernardi    - 8066395               *
-*                                                               *
-****************************************************************/
 
 #include <iostream>
-
-
-typedef struct {
-	int x;
-	int y;
-} coord;
-
-typedef struct space {
-    int value;
-    int *domain;
-    int forward_check;
-    coord *pos;
-    coord greater[4];
-    coord less[4];
-}Space;
-
-typedef struct {
-	Space **grid;
-	int fsize;
-	int **restr;
-	int rsize;
-}Futoshiki;
-
-
-typedef struct
-{
-	
-}Restriction_M;
-
-void createGame(Futoshiki *field, FILE *);
-void printGame(Futoshiki field);
-void freeMemory(Futoshiki *field);
+#include <vector>
+#include <ctime>
+#include "FutoshikiSolver.h"
 
 
 using namespace std;
 
-int main(int argc, char **argv)
-{
-	int ngames;
-	Futoshiki Field;
+bool solveMultipleBoards(int boardQnt, int opt){
+	int size;
 
-	if (argc != 3) {
-		cout << "Usage: ./futoshiki [flag forward check] [flag MRV] \n" << endl;
-		cout << "Example: ./futoshiki 1 0 (only forward check ON)\n" << endl;
-	} else {
-		
-		FILE *fp = fopen("futoshiki.dat","r");
+	FutoshikiSolver *futoshiki;
+	for (int i = 0; i < boardQnt; i++){
 
-		fscanf(fp, "%d\n", &ngames);
+		cin >> size;
+		futoshiki = new FutoshikiSolver(size);
+		cout << i+1 << endl;
+		futoshiki->solveBoard(opt);
 
-		for (int k = 0; k < ngames; ++k)
-		{
-			createGame(&Field, fp);
+		delete futoshiki;
+	}
+}
 
-			cout << "\nnumber of games = " << ngames << endl;
-			cout << "field size = " << Field.fsize << "   number of restrictions = " << Field.rsize << endl;
+int main(int argc, char **argv){
+	int boardQnt;
+	int opt;
 
-			printGame(Field);
+	clock_t tin, tout;
 
-			//freeMemory(&Field);
-		}
+	if(argc != 2){
+		cout << "Selecione a opção desejada:\n(1) Backtracking\n(2) Foward Checking\n(3) Foward Checking e MRV" << endl;
+		cout << "Exemplo: ./game 2 < futoshiki.dat\n" << endl;
 
 		return 0;
 	}
+
+	opt = atoi(argv[1]);
+	cin >> boardQnt;
+
+	tin = clock();
+	solveMultipleBoards(boardQnt, opt);
+	tout = clock();
+	cout << endl << (double)(tout-tin)/CLOCKS_PER_SEC<< endl;
 }
-
-
-/*=================================
-=            Functions            =
-=================================*/
-
-void createGame(Futoshiki *field, FILE *fp)
-{
-	fscanf(fp, "%d %d\n", &field->fsize, &field->rsize);
-    
-	field->grid = (Space **) calloc(field->fsize, sizeof(Space *));
-	for (int i = 0; i < field->fsize; ++i)
-		field->grid[i] = (Space *) calloc(field->fsize, sizeof(Space));
-
-	for (int i = 0; i < field->fsize; ++i)
-		for (int j = 0; j < field->fsize; ++j)
-			fscanf(fp, "%d ", &field->grid[i][j].value);
-
-	field->restr = (int **) calloc(field->rsize, sizeof(int *));
-	for (int i = 0; i < field->rsize; ++i)
-		field->restr[i] = (int *) calloc(4, sizeof(int));
-
-	for (int i = 0; i < field->rsize; ++i)
-		for (int j = 0; j < 4; ++j)
-			fscanf(fp, "%d ", &field->restr[i][j]);
-
-	// for (int i = 0; i < rsize; ++i)
-	// {
-	// 	for (int j = 0; j < 4; j+2)
-	// 	{
-	// 		field->grid[field->restr[i][j]][field->restr[i][j+1]]. = 
-	// 	}
-	// }
-
-}
-
-void printGame(Futoshiki field)
-{
-	cout << endl;
-	for (int i = 0; i < field.fsize; ++i)
-	{
-		for (int j = 0; j < field.fsize; ++j)
-			cout << " " << field.grid[i][j].value;
-
-		cout << endl;
-	}
-
-	cout << endl;
-
-
-	for (int i = 0; i < field.rsize; ++i)
-	{
-		for (int j = 0; j < 4; ++j)
-			cout << " " << field.restr[i][j];
-
-		cout << endl;
-	}
-}
-
-// void freeMemory(Futoshiki *field)
-// {
-// 	for (int i = 0; i < field->fsize; ++i)
-// 		free(field->data[i]);
-
-// 	free(field->data);
-
-// 	for (int i = 0; i < field->nrestr; ++i)
-// 		free(field->restr[i]);
-
-// 	free(field->restr);
-// }
-
-
-/*=====  End of Functions  ======*/
